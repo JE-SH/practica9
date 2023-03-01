@@ -14,7 +14,6 @@
 #define ROWS 27
 
 byte X,Y; // coordenadas en X y Y
-byte parpadeo; // 1 para ocultarlo, 0 para mostrarlo
 int tempo = 0;
 byte tile_num = 25;  
 byte tile_0=0;
