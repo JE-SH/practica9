@@ -30,44 +30,35 @@ byte revisar_coordenadas()
   ppu_wait_nmi();
   //Establece dirección de vram y lee un byte en "resultados"
   vram_adr(coordenada);
-  vram_read(&resultado, 1);
-  // scroll registers are corrupt
-  // fix by setting vram address
+  vram_read(&resultado, 1); //lee 1 byte dentro de resultado
+  // registros de desplazaminto están corruptos
+  // se soluciona estableciendo la direccion de vram
   vram_adr(0x0);
   return resultado;
 }
 //-----
-void limpia_pantalla() {
-  vrambuf_clear();
-  ppu_off();
-  vram_adr(0x2000);
-  vram_fill(0, 32*28);
-  vram_adr(0x0);
-  ppu_on_bg();
-}
-//-----
+
 void dibuja_puntero(oam_id)
 {
   
   tempo++;
     if ((tempo)>2)
     {
-      oam_spr(X*28, Y*5, 0x00,0, oam_id);
-      if((tempo)>2)
-      	tempo=0;
+      oam_spr(X*8, Y*8, 0x00,0, oam_id);
+      tempo=0;
     }
     else
       oam_spr(X*8, Y*8,tile_num,0, oam_id); 
 }
 //-----
-void dibuja_rastro()
+void dibuja_tile()
 {
   byte r;
   r = revisar_coordenadas();
   
-  if(r!=0)
+  if(r!=0) //Hay un tile?
     vrambuf_put(NTADR_A(X,Y), &tile_0, 1);
-  else
+  else  
     vrambuf_put(NTADR_A(X,Y), &tile_num, 1);
     
   sprintf(str," %6d", r);
@@ -82,7 +73,7 @@ void captura_botones()
   pad = pad_poll(0); 
   
   if(pad & PAD_LEFT && X>1)
-      X--;
+    X--;
   if(pad & PAD_RIGHT && X<30)
     X++;
   if(pad & PAD_UP && Y>1)
@@ -90,12 +81,11 @@ void captura_botones()
   if(pad & PAD_DOWN && Y<27)
     Y++;
   if(pad & PAD_START)
-    dibuja_rastro();
+    dibuja_tile();
   if(pad & PAD_A)
     tile_num++;
   if(pad & PAD_B)
     tile_num--;
-  
 }
 //-----
 
@@ -152,7 +142,7 @@ void main(void)
   vram_write("EL TILE ERA EL NUMERO", 21);
   
   ppu_on_all();
-  //memset(str, 0, sizeof(str));
+  memset(str, 0, sizeof(str));
 
   while(1) {
     
